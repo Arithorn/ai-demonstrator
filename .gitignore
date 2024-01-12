@@ -1,0 +1,20 @@
+# Node.js
+node_modules/
+
+# SQLite database
+db.sqlite
+
+# Generated files
+assets/
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Dependencies
+package-lock.json
+yarn.lock

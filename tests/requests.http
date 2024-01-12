@@ -1,0 +1,9 @@
+### Test Alive
+GET http://mc.manbatcave.com:3001
+### Request tts
+POST http://mc.manbatcave.com:3001/api/tts
+Content-Type: application/json
+
+{
+    "message":"Welcome to the new world of AI"
+}
