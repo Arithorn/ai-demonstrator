@@ -5,6 +5,7 @@ import { textToSpeech } from "./tts.mjs";
 import { loginUser, registerUser } from "./users.mjs";
 import "dotenv/config";
 import { chat } from "./chat.mjs";
+import { stream } from "./stream.mjs";
 
 const setupRoutes = (app) => {
   app.use(
@@ -66,7 +67,11 @@ const setupRoutes = (app) => {
 
   app.post("/api/tts", async (req, res) => {
     try {
-      let result = await textToSpeech(req.auth.email, req.body.message);
+      let result = await textToSpeech(
+        req.auth.email,
+        req.body.voice,
+        req.body.message
+      );
       res.send(result);
     } catch (error) {
       console.error("Error processing TTS request:", error);
@@ -88,6 +93,17 @@ const setupRoutes = (app) => {
     try {
       const { model, messages } = req.body;
       let result = await chat(model, messages);
+      res.send(result);
+    } catch (error) {
+      console.error("Error processing chat request:", error);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
+  });
+
+  app.post("/api/stream", async (req, res) => {
+    try {
+      const { model, messages } = req.body;
+      let result = await stream(res, model, messages);
       res.send(result);
     } catch (error) {
       console.error("Error processing chat request:", error);

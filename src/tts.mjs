@@ -6,13 +6,13 @@ import { tts } from "./models/TTS.mjs";
 
 const openai = new OpenAI();
 const ttsModel = "tts-1";
-const ttsVoice = "alloy";
+// const ttsVoice = "alloy";
 
-const textToSpeech = async (email, message) => {
+const textToSpeech = async (email, voice, message) => {
   try {
     const mp3 = await openai.audio.speech.create({
       model: ttsModel,
-      voice: ttsVoice,
+      voice: voice,
       input: message,
     });
 
@@ -20,7 +20,7 @@ const textToSpeech = async (email, message) => {
     const fname = `${uuid()}.mp3`;
     const fullfname = `./assets/mp3/${fname}`;
 
-    // Uncomment the next line to save the MP3 file locally
+    // Save the file locally
     await fs.writeFile(fullfname, buffer);
 
     // Update database with new file name and user email
