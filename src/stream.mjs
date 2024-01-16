@@ -16,12 +16,6 @@ const stream = async (res, model, messages) => {
       res.write(part.choices[0]?.delta.content || "");
     }
     res.end();
-
-    // return {
-    //   status: true,
-    //   reason: res.choices[0].finish_reason,
-    //   result: res.choices[0].message,
-    // };
   } catch (error) {
     console.error("Error processing chat request:", error);
     return { status: false, error: "Internal Server Error" };

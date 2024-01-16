@@ -103,8 +103,9 @@ const setupRoutes = (app) => {
   app.post("/api/stream", async (req, res) => {
     try {
       const { model, messages } = req.body;
-      let result = await stream(res, model, messages);
-      res.send(result);
+      console.log(req.body);
+      stream(res, model, messages);
+      // res.send(result);
     } catch (error) {
       console.error("Error processing chat request:", error);
       res.status(500).send({ error: "Internal Server Error" });
