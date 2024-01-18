@@ -1,16 +1,18 @@
 import OpenAI from "openai";
-import fs from "fs";
+import fs from "fs/promises";
+import path from "path";
 import { v4 as uuid } from "uuid";
 
 import { pictures } from "./models/Pictures.mjs";
 
 const openai = new OpenAI();
-const model = "dall-e-2";
-const imageSize = "512x512";
+const model = "dall-e-3";
+const imageSize = "1024x1024";
 const imageQuality = "standard";
 const imageCount = 1;
 
 const generatePicture = async (email, prompt) => {
+  console.log(prompt);
   try {
     const jpg = await openai.images.generate({
       model,
@@ -23,8 +25,8 @@ const generatePicture = async (email, prompt) => {
 
     const fname = `${uuid()}.jpg`;
     const fullfname = `./assets/jpg/${fname}`;
-    console.log(jpg.data[0]);
-    fs.writeFile(fullfname, atob(jpg.data[0].b64_json));
+    var buf = Buffer.from(jpg.data[0].b64_json, "base64");
+    fs.writeFile(fullfname, buf);
 
     // Update database with new file name and user email
     await pictures.create({ email, prompt, fname });
@@ -47,16 +49,11 @@ const sendJpgList = async (email) => {
   }
 };
 
-const sendJpg = (res, name) => {
+const sendJpg = async (res, name) => {
   const fname = `./assets/jpg/${name}`;
-  const stat = fs.statSync(fname);
-  var readStream;
-  res.header({
-    "Content-Type": "image/jpg",
-    "Content-Length": stat.size,
-  });
-  readStream = fs.createReadStream(fname);
-  readStream.pipe(res);
+  console.log(fname);
+  const __dirname = process.cwd();
+  res.sendFile(path.join(__dirname, "./assets/jpg/", name));
 };
 
 export { generatePicture, sendJpg, sendJpgList };
