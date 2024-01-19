@@ -1,6 +1,11 @@
 import { expressjwt as jwt } from "express-jwt";
 import { sendMp3, deleteMp3, sendMp3List } from "./audio.mjs";
-import { generatePicture, sendJpg, sendJpgList } from "./picturegen.mjs";
+import {
+  deleteJpg,
+  generatePicture,
+  sendJpg,
+  sendJpgList,
+} from "./picturegen.mjs";
 import { textToSpeech } from "./tts.mjs";
 import { loginUser, registerUser } from "./users.mjs";
 import "dotenv/config";
@@ -61,6 +66,15 @@ const setupRoutes = (app) => {
       sendJpg(res, req.params.fname);
     } catch (error) {
       console.error("Error sending jpg:", error);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
+  });
+  app.delete("/api/jpg/:fname", async (req, res) => {
+    try {
+      let result = await deleteJpg(res, req.params.fname);
+      res.send(result);
+    } catch (error) {
+      console.error("Error deleting jpg:", error);
       res.status(500).send({ error: "Internal Server Error" });
     }
   });

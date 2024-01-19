@@ -51,9 +51,20 @@ const sendJpgList = async (email) => {
 
 const sendJpg = async (res, name) => {
   const fname = `./assets/jpg/${name}`;
-  console.log(fname);
   const __dirname = process.cwd();
   res.sendFile(path.join(__dirname, "./assets/jpg/", name));
 };
 
-export { generatePicture, sendJpg, sendJpgList };
+const deleteJpg = async (res, name) => {
+  const fname = `./assets/jpg/${name}`;
+  try {
+    await pictures.destroy({ where: { fname: name } });
+    await fs.rm(fname);
+    return { status: true };
+  } catch (err) {
+    console.error(`Error deleting file ${fname}:`, err);
+    return { status: false, error: err.message };
+  }
+};
+
+export { generatePicture, sendJpg, sendJpgList, deleteJpg };
