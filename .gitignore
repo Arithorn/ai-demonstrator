@@ -19,5 +19,4 @@ logs/
 .env
 
 # Dependencies
-package-lock.json
 yarn.lock
