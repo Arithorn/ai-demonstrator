@@ -5,11 +5,18 @@ import cors from "cors";
 
 import { setupRoutes } from "./src/routes.mjs";
 import { setupDb } from "./src/db.mjs";
+import compression from "compression";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 const port = 3001;
 const app = express();
 let sequelize;
+const limiter = rateLimit({ windowMs: 1 * 60 * 1000, max: 20 });
 app.use(cors({ origin: "*" }));
+app.use(compression());
+app.use(helmet());
+app.use(limiter);
 app.use(bodyParser.json());
 
 const main = () => {
