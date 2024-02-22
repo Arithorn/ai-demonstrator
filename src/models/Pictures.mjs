@@ -16,7 +16,7 @@ const pictures = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [1, 255],
+        len: [1, 4000],
       },
     },
     fname: {

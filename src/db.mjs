@@ -1,8 +1,11 @@
 import { Sequelize } from "sequelize";
+import "dotenv/config";
 
-const sequelize = new Sequelize({ dialect: "sqlite", storage: "db.sqlite" });
+// const sequelize = new Sequelize({ dialect: "sqlite", storage: "db.sqlite" });
+const sequelize = new Sequelize(process.env.DB_STRING);
 
 const setupDb = async () => {
+  console.log("Setting up database...");
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
