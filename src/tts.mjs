@@ -1,12 +1,23 @@
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
+import { Readable } from "stream";
 import OpenAI from "openai";
-import fs from "fs/promises";
 import { v4 as uuid } from "uuid";
-
+import "dotenv/config";
 import { tts } from "./models/TTS.mjs";
 
 const openai = new OpenAI();
 const ttsModel = "tts-1";
 // const ttsVoice = "alloy";
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+const bucketName = process.env.AWS_S3_BUCKET_NAME;
 
 const textToSpeech = async (email, voice, message) => {
   try {
@@ -15,13 +26,15 @@ const textToSpeech = async (email, voice, message) => {
       voice: voice,
       input: message,
     });
-
-    const buffer = Buffer.from(await mp3.arrayBuffer());
+    const stream = Readable.from(await mp3.body);
     const fname = `${uuid()}.mp3`;
-    const fullfname = `./assets/mp3/${fname}`;
-
-    // Save the file locally
-    await fs.writeFile(fullfname, buffer);
+    const params = {
+      Bucket: bucketName,
+      Key: `mp3/${fname}`,
+      Body: stream,
+    };
+    const upload = new Upload({ client: s3Client, params });
+    await upload.done();
 
     // Update database with new file name and user email
     await tts.create({ email, message, fname });

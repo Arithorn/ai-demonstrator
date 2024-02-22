@@ -4,11 +4,10 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
-import { fromBase64, toBase64 } from "@aws-sdk/util-base64-node";
+import { fromBase64 } from "@aws-sdk/util-base64-node";
 import { v4 as uuid } from "uuid";
 import OpenAI from "openai";
-import fs from "fs/promises";
-import path from "path";
+import "dotenv/config";
 
 import { pictures } from "./models/Pictures.mjs";
 
@@ -41,7 +40,7 @@ const generatePicture = async (email, prompt) => {
     const fname = `${uuid()}.jpg`;
     const params = {
       Bucket: bucketName,
-      Key: fname,
+      Key: `jpg/${fname}`,
       Body: fromBase64(jpg.data[0].b64_json),
     };
     await s3Client.send(new PutObjectCommand(params));
@@ -70,7 +69,7 @@ const sendJpgList = async (email) => {
 const sendJpg = async (res, name) => {
   const params = {
     Bucket: bucketName,
-    Key: name,
+    Key: `jpg/${name}`,
   };
   try {
     const { Body } = await s3Client.send(new GetObjectCommand(params));
@@ -86,7 +85,7 @@ const sendJpg = async (res, name) => {
 const deleteJpg = async (res, name) => {
   const params = {
     Bucket: bucketName,
-    Key: name,
+    Key: `jpg/${name}`,
   };
   try {
     await s3Client.send(new DeleteObjectCommand(params));
