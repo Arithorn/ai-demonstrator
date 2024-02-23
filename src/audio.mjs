@@ -1,5 +1,19 @@
-import fs from "fs";
+import {
+  S3Client,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
+import "dotenv/config";
 import { tts } from "./models/TTS.mjs";
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+const bucketName = process.env.AWS_S3_BUCKET_NAME;
 
 const sendMp3List = async (email) => {
   console.log(email);
@@ -12,27 +26,35 @@ const sendMp3List = async (email) => {
   }
 };
 
-const sendMp3 = (res, name) => {
-  const fname = `./assets/mp3/${name}`;
-  const stat = fs.statSync(fname);
-  var readStream;
-  res.header({
-    "Content-Type": "audio/mpeg",
-    "Content-Length": stat.size,
-  });
-  readStream = fs.createReadStream(fname);
-  readStream.pipe(res);
+const sendMp3 = async (res, name) => {
+  const params = {
+    Bucket: bucketName,
+    Key: `mp3/${name}`,
+  };
+  try {
+    const { Body } = await s3Client.send(new GetObjectCommand(params));
+
+    const responseStream = await Body.transformToByteArray();
+    res.header({ "Content-Type": "image/mp3" });
+    res.end(responseStream, "binary");
+  } catch (error) {
+    console.error(`Error fetching file ${name} from S3:`, error);
+    res.status(500).json({ error: "Failed to fetch file from S3" });
+  }
 };
 
 const deleteMp3 = async (res, name) => {
-  const fname = `./assets/mp3/${name}`;
+  const params = {
+    Bucket: bucketName,
+    Key: `mp3/${name}`,
+  };
   try {
+    await s3Client.send(new DeleteObjectCommand(params));
     await tts.destroy({ where: { fname: name } });
-    await fs.promises.rm(fname);
     return { status: true };
-  } catch (err) {
-    console.error(`Error deleting file ${fname}:`, err);
-    return { status: false, error: err.message };
+  } catch (error) {
+    console.error(`Error deleting file ${name} from S3:`, error);
+    return { status: false, error: "Failed to delete file from S3" };
   }
 };
 
