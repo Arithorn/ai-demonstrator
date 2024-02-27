@@ -2,7 +2,11 @@ import { Sequelize } from "sequelize";
 import "dotenv/config";
 
 // const sequelize = new Sequelize({ dialect: "sqlite", storage: "db.sqlite" });
-const sequelize = new Sequelize(process.env.DB_STRING);
+const { DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT } = process.env;
+const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
+  host: DB_HOST,
+  dialect: "postgres",
+});
 
 const setupDb = async () => {
   console.log("Setting up database...");
