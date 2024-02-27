@@ -9,7 +9,7 @@ import compression from "compression";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 
-const port = 3001;
+const port = 3000;
 const app = express();
 let sequelize;
 const limiter = rateLimit({ windowMs: 1 * 60 * 1000, max: 20 });
