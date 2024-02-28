@@ -4,6 +4,9 @@ FROM node:21
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
+# Install Postgres Libraries
+RUN apt-get install libpq-dev g++ make
+
 # Copy package.json and package-lock.json
 COPY package.json ./
 COPY package-lock.json ./

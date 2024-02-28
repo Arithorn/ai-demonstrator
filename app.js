@@ -3,8 +3,9 @@ import bodyParser from "body-parser";
 import cors from "cors";
 // import { Sequelize } from "sequelize";
 
-import { setupRoutes } from "./src/routes.mjs";
 import { setupDb } from "./src/db.mjs";
+import { setupRoutes } from "./src/routes.mjs";
+
 import compression from "compression";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -20,9 +21,9 @@ app.use(cors({ origin: "*" }));
 // app.use(limiter);
 app.use(bodyParser.json());
 
-const main = () => {
-  sequelize = setupDb();
-  setupRoutes(app);
+const main = async () => {
+  sequelize = await setupDb();
+  await setupRoutes(app);
 
   try {
     app.listen(port, () => {
