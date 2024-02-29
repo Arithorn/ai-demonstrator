@@ -8,15 +8,10 @@ import { tts } from "./models/TTS.mjs";
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
 });
 const bucketName = process.env.AWS_S3_BUCKET_NAME;
 
 const sendMp3List = async (email) => {
-  console.log(email);
   try {
     let result = await tts.findAll({ where: { email } });
     return { list: result };

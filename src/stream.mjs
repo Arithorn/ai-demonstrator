@@ -12,7 +12,6 @@ const stream = async (res, model, messages) => {
     });
 
     for await (const part of responseStream) {
-      console.log(part.choices[0]?.delta?.content || "");
       res.write(part.choices[0]?.delta.content || "");
     }
     res.end();
