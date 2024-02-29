@@ -57,7 +57,6 @@ const healthCheck = async (req, res) => {
     database: databaseStatus,
   };
   return status;
-  };
 };
 
 export { healthCheck };
