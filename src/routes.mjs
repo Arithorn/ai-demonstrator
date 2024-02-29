@@ -11,6 +11,7 @@ import { loginUser, registerUser } from "./users.mjs";
 import "dotenv/config";
 import { chat } from "./chat.mjs";
 import { stream } from "./stream.mjs";
+import { healthCheck } from "./health-check.mjs";
 
 const setupRoutes = (app) => {
   app.use(
@@ -20,6 +21,10 @@ const setupRoutes = (app) => {
 
   app.get("/", (req, res) => {
     res.send("Hello World");
+  });
+  app.get("/health", async (req, res) => {
+    const result = await healthCheck();
+    res.send(result);
   });
 
   app.get("/api/mp3", async (req, res) => {
