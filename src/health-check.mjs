@@ -53,9 +53,9 @@ const healthCheck = async (req, res) => {
   const s3Status = await checkS3();
   const databaseStatus = await checkDatabase();
   const status = {
-    openai: openaiStatus,
-    s3: s3Status,
-    database: databaseStatus,
+    openai: openaiStatus.status,
+    s3: s3Status.status,
+    database: databaseStatus.status,
   };
   return status;
 };
