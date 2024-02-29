@@ -5,7 +5,7 @@ const openai = new OpenAI();
 
 const checkOpenai = async () => {
   try {
-    const res = await openai.completions.create({
+    const res = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-1106",
       prompt: "say test123",
       max_tokens: 5,
