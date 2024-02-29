@@ -51,10 +51,12 @@ const healthCheck = async (req, res) => {
   const openaiStatus = await checkOpenai();
   const s3Status = await checkS3();
   const databaseStatus = await checkDatabase();
-  return {
+  const status = {
     openai: openaiStatus,
     s3: s3Status,
     database: databaseStatus,
+  };
+  return status;
   };
 };
 
