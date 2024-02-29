@@ -1,4 +1,23 @@
-import { checkOpenai } from "./stream.mjs";
+import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import OpenAI from "openai";
+const openai = new OpenAI();
+const checkOpenai = async () => {
+  try {
+    const res = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-1106",
+      messages: [{ role: "system", content: "say test123" }],
+      max_tokens: 5,
+    });
+    return {
+      status: true,
+      reason: res.choices[0].finish_reason,
+      result: res.choices[0].message,
+    };
+  } catch (error) {
+    console.error("Error checking OpenAI API:", error);
+    return { status: false, error: "Internal Server Error" };
+  }
+};
 
 const checkS3 = async () => {
   // Check S3 health
