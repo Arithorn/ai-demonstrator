@@ -1,4 +1,5 @@
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { pictures } from "./models/Pictures.mjs";
 import OpenAI from "openai";
 const openai = new OpenAI();
 const checkOpenai = async () => {
