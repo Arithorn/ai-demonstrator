@@ -1,12 +1,15 @@
 import { Sequelize } from "sequelize";
 import "dotenv/config";
+import toBool from "to-bool";
 
-const { DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT } = process.env;
+const { DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NATIVE, DB_SSL } =
+  process.env;
+console.log(DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NATIVE, DB_SSL);
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
   port: DB_PORT,
-  ssl: true,
-  native: true,
+  ssl: toBool(DB_SSL),
+  native: toBool(DB_NATIVE),
   dialect: "postgres",
   authenticate: true,
 });
