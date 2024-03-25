@@ -5,6 +5,7 @@ import { user } from "./models/Users.mjs";
 import "dotenv/config";
 
 const hashPassword = async (password) => {
+  console.log("Password:", password);
   try {
     const hash = await bcrypt.hash(password, 10);
     return hash;
