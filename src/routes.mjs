@@ -11,6 +11,7 @@ import { loginUser, registerUser } from "./users.mjs";
 import "dotenv/config";
 import { chat } from "./chat.mjs";
 import { stream } from "./stream.mjs";
+import { reviewPullRequest } from "./github.mjs";
 import { healthCheck } from "./health-check.mjs";
 
 const setupRoutes = (app) => {
@@ -127,6 +128,24 @@ const setupRoutes = (app) => {
       // res.send(result);
     } catch (error) {
       console.error("Error processing chat request:", error);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
+  });
+
+  app.post("/api/pullrequest", async (req, res) => {
+    try {
+      const { model, githubUsername, githubRepo, pullRequestNumber } = req.body;
+      console.log(req.body);
+      const result = await reviewPullRequest(res, {
+        githubUsername,
+        githubRepo,
+        pullRequestNumber,
+        model,
+      });
+
+      res.send(result);
+    } catch (error) {
+      console.error("Error processing pull request:", error);
       res.status(500).send({ error: "Internal Server Error" });
     }
   });
