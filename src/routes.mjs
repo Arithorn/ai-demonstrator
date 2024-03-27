@@ -134,15 +134,8 @@ const setupRoutes = (app) => {
 
   app.post("/api/pullrequest", async (req, res) => {
     try {
-      const { model, githubUsername, githubRepo, pullRequestNumber } = req.body;
       console.log(req.body);
-      const result = await reviewPullRequest(res, {
-        githubUsername,
-        githubRepo,
-        pullRequestNumber,
-        model,
-      });
-
+      const result = await reviewPullRequest(res, req.body);
       res.send(result);
     } catch (error) {
       console.error("Error processing pull request:", error);

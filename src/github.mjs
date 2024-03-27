@@ -7,9 +7,9 @@ import { Octokit } from "octokit";
 const reviewPullRequest = async (
   res,
   {
-    githubUsername,
-    githubRepo,
-    pullRequestNumber,
+    repo,
+    pull_number,
+    owner,
     model, // Take OpenAI model as an input parameter
   }
 ) => {
@@ -23,9 +23,9 @@ const reviewPullRequest = async (
   try {
     // Fetch pull request details from GitHub
     const pullRequestResponse = await octokit.rest.pulls.get({
-      owner: githubUsername,
-      repo: githubRepo,
-      pull_number: pullRequestNumber,
+      owner,
+      repo,
+      pull_number,
     });
 
     // Extract pull request data
@@ -33,17 +33,17 @@ const reviewPullRequest = async (
 
     // Fetch files changed in the pull request
     const filesResponse = await octokit.rest.pulls.listFiles({
-      owner: githubUsername,
-      repo: githubRepo,
-      pull_number: pullRequestNumber,
+      owner,
+      repo,
+      pull_number,
     });
 
     // Fetch contents for the changed files
     const changedFiles = await Promise.all(
       filesResponse.data.map(async (file) => {
         const fileContentResponse = await octokit.rest.repos.getContent({
-          owner: githubUsername,
-          repo: githubRepo,
+          owner,
+          repo,
           path: file.filename,
           ref: pullRequestData.head.sha,
         });
@@ -57,7 +57,7 @@ const reviewPullRequest = async (
     // Prepare the prompt for the OpenAI model
     const prompt = `Please review the following pull request:
 
-Repository: https://github.com/${githubUsername}/${githubRepo}
+Repository: https://github.com/${owner}/${repo}
 Pull Request Title: ${pullRequestData.title}
 Pull Request Description: ${pullRequestData.body}
 
