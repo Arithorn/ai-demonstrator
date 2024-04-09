@@ -1,4 +1,5 @@
 import { expressjwt as jwt } from "express-jwt";
+import passport from "passport";
 import { sendMp3, deleteMp3, sendMp3List } from "./audio.mjs";
 import {
   deleteJpg,
@@ -164,6 +165,42 @@ const setupRoutes = (app) => {
       res.status(500).send({ error: "Internal Server Error" });
     }
   });
+  // SAML authentication route
+  app.get(
+    "/auth/saml",
+    passport.authenticate("saml", { session: false }),
+    (req, res) => {
+      console.log("saml");
+      passport.authenticate("saml");
+      console.log(req);
+    }
+  );
+  // app.post("/auth/saml", (req, res) => {
+  //   console.log("saml");
+  //   console.log(req.body);
+  // });
+
+  // SAML callback route
+  // app.post("/auth/saml/callback", (req, res) => {
+  //   console.log("saml callback");
+  //   console.log(req.user);
+  //   res.redirect(`/login/callback?token=${req.user}`);
+  // });
+  app.post(
+    "/auth/saml/callback",
+    passport.authenticate("saml", {
+      failureRedirect: "/login",
+      failureFlash: true,
+      session: false,
+      debug: true,
+    }),
+    (req, res) => {
+      console.log("saml callback");
+      console.log(req.body);
+      res.send({ token: req.user });
+      // res.redirect(`/login/callback?token=${req.user}`);
+    }
+  );
 };
 
 export { setupRoutes };
