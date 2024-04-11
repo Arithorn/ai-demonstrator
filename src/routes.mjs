@@ -144,61 +144,41 @@ const setupRoutes = (app) => {
     }
   });
 
-  app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      let data = await loginUser(email, password);
-      res.send(data);
-    } catch (error) {
-      console.error("Error during login:", error);
-      res.status(500).send({ error: "Internal Server Error" });
-    }
-  });
+  // app.post("/login", async (req, res) => {
+  //   const { email, password } = req.body;
+  //   try {
+  //     let data = await loginUser(email, password);
+  //     res.send(data);
+  //   } catch (error) {
+  //     console.error("Error during login:", error);
+  //     res.status(500).send({ error: "Internal Server Error" });
+  //   }
+  // });
 
-  app.post("/register", async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      let data = await registerUser(email, password);
-      res.send(data);
-    } catch (error) {
-      console.error("Error during registration:", error);
-      res.status(500).send({ error: "Internal Server Error" });
-    }
-  });
+  // app.post("/register", async (req, res) => {
+  //   const { email, password } = req.body;
+  //   try {
+  //     let data = await registerUser(email, password);
+  //     res.send(data);
+  //   } catch (error) {
+  //     console.error("Error during registration:", error);
+  //     res.status(500).send({ error: "Internal Server Error" });
+  //   }
+  // });
   // SAML authentication route
-  app.get(
-    "/auth/saml",
-    passport.authenticate("saml", { session: false }),
-    (req, res) => {
-      console.log("saml");
-      passport.authenticate("saml");
-      console.log(req);
-    }
-  );
-  // app.post("/auth/saml", (req, res) => {
-  //   console.log("saml");
-  //   console.log(req.body);
-  // });
-
+  app.get("/auth/saml", passport.authenticate("saml"));
   // SAML callback route
-  // app.post("/auth/saml/callback", (req, res) => {
-  //   console.log("saml callback");
-  //   console.log(req.user);
-  //   res.redirect(`/login/callback?token=${req.user}`);
-  // });
   app.post(
     "/auth/saml/callback",
     passport.authenticate("saml", {
       failureRedirect: "/login",
       failureFlash: true,
       session: false,
-      debug: true,
+      validateInResponseTo: false,
     }),
     (req, res) => {
       console.log("saml callback");
-      console.log(req.body);
-      res.send({ token: req.user });
-      // res.redirect(`/login/callback?token=${req.user}`);
+      res.redirect(`http://mc.manbatcave.com:5173/post-auth/${req.user}`);
     }
   );
 };

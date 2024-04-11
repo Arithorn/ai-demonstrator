@@ -15,6 +15,7 @@ const s3Client = new S3Client({
 const bucketName = process.env.AWS_S3_BUCKET_NAME;
 
 const textToSpeech = async (email, voice, message) => {
+  console.log("email:", email);
   try {
     const mp3 = await openai.audio.speech.create({
       model: ttsModel,
