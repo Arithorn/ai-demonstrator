@@ -1,4 +1,5 @@
 import { expressjwt as jwt } from "express-jwt";
+import passport from "passport";
 import { sendMp3, deleteMp3, sendMp3List } from "./audio.mjs";
 import {
   deleteJpg,
@@ -143,27 +144,43 @@ const setupRoutes = (app) => {
     }
   });
 
-  app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      let data = await loginUser(email, password);
-      res.send(data);
-    } catch (error) {
-      console.error("Error during login:", error);
-      res.status(500).send({ error: "Internal Server Error" });
-    }
-  });
+  // app.post("/login", async (req, res) => {
+  //   const { email, password } = req.body;
+  //   try {
+  //     let data = await loginUser(email, password);
+  //     res.send(data);
+  //   } catch (error) {
+  //     console.error("Error during login:", error);
+  //     res.status(500).send({ error: "Internal Server Error" });
+  //   }
+  // });
 
-  app.post("/register", async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      let data = await registerUser(email, password);
-      res.send(data);
-    } catch (error) {
-      console.error("Error during registration:", error);
-      res.status(500).send({ error: "Internal Server Error" });
+  // app.post("/register", async (req, res) => {
+  //   const { email, password } = req.body;
+  //   try {
+  //     let data = await registerUser(email, password);
+  //     res.send(data);
+  //   } catch (error) {
+  //     console.error("Error during registration:", error);
+  //     res.status(500).send({ error: "Internal Server Error" });
+  //   }
+  // });
+  // SAML authentication route
+  app.get("/auth/saml", passport.authenticate("saml"));
+  // SAML callback route
+  app.post(
+    "/auth/saml/callback",
+    passport.authenticate("saml", {
+      failureRedirect: "/login",
+      failureFlash: true,
+      session: false,
+      validateInResponseTo: false,
+    }),
+    (req, res) => {
+      console.log("saml callback");
+      res.redirect(`http://mc.manbatcave.com:5173/post-auth/${req.user}`);
     }
-  });
+  );
 };
 
 export { setupRoutes };
