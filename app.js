@@ -20,8 +20,8 @@ const limiter = rateLimit({ windowMs: 1 * 60 * 1000, max: 20 });
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(compression());
-// app.use(helmet({ crossOriginEmbedderPolicy: false }));
-app.use(cors({ origin: "*" }));
+app.use(helmet());
+// app.use(cors({ origin: "*" }));
 // app.use(limiter);
 app.use(bodyParser.json());
 const siteUrl = process.env.SITE_URL || "http://localhost:3000";
@@ -38,11 +38,12 @@ const samlStrat = new SamlStrategy(
     racComparison: "exact",
     signatureAlgorithm: "sha256",
     idpCert,
-    wantAuthnResponseSigned: false,
-    wantAssertionsSigned: false,
+    wantAuthnResponseSigned: true,
+    wantAssertionsSigned: true,
     identifierFormat: null,
   },
   (profile, done) => {
+    console.log(profile);
     const user = {
       id: profile.nameID,
       email: profile.nameID,
