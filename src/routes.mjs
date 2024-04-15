@@ -144,27 +144,6 @@ const setupRoutes = (app) => {
     }
   });
 
-  // app.post("/login", async (req, res) => {
-  //   const { email, password } = req.body;
-  //   try {
-  //     let data = await loginUser(email, password);
-  //     res.send(data);
-  //   } catch (error) {
-  //     console.error("Error during login:", error);
-  //     res.status(500).send({ error: "Internal Server Error" });
-  //   }
-  // });
-
-  // app.post("/register", async (req, res) => {
-  //   const { email, password } = req.body;
-  //   try {
-  //     let data = await registerUser(email, password);
-  //     res.send(data);
-  //   } catch (error) {
-  //     console.error("Error during registration:", error);
-  //     res.status(500).send({ error: "Internal Server Error" });
-  //   }
-  // });
   // SAML authentication route
   app.get("/auth/saml", passport.authenticate("saml"));
   // SAML callback route
@@ -177,7 +156,6 @@ const setupRoutes = (app) => {
       validateInResponseTo: false,
     }),
     (req, res) => {
-      console.log("saml callback");
       res.redirect(`${process.env.SITE_URL}/post-auth/${req.user}`);
     }
   );

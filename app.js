@@ -21,7 +21,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(compression());
 app.use(helmet());
-// app.use(cors({ origin: "*" }));
 // app.use(limiter);
 app.use(bodyParser.json());
 const siteUrl = process.env.SITE_URL || "http://localhost:3000";
