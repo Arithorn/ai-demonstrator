@@ -178,7 +178,7 @@ const setupRoutes = (app) => {
     }),
     (req, res) => {
       console.log("saml callback");
-      res.redirect(`http://mc.manbatcave.com:5173/post-auth/${req.user}`);
+      res.redirect(`${process.env.SITE_URL}/post-auth/${req.user}`);
     }
   );
 };
