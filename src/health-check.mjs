@@ -24,26 +24,25 @@ const checkOpenai = async () => {
 };
 
 const checkAzureOpenai = async () => {
+  const deploymentId = "ts-demo-gpt-35";
   try {
     const client = new OpenAIClient(
       process.env.AZURE_OPENAI_ENDPOINT,
       new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
     );
-    const res = await client.streamChatCompletions(
-      "ts-demo-gpt-35",
+    const res = await client.getChatCompletions(
+      deploymentId,
       [{ role: "system", content: "say test123" }],
       { maxTokens: 5 }
     );
-    let content = "";
-    for await (const event of res) {
-      for (const choice of event.choices) {
-        content += choice.delta?.content;
-      }
+    for (const choice of res.choices) {
+      console.log(choice.message);
     }
-
+    console.log(res.choices[0]);
     return {
       status: true,
-      result: content,
+      finsihs: res.choices[0].finishReason,
+      result: res.choices[0],
     };
   } catch (error) {
     console.error("Error checking OpenAI API:", error);
