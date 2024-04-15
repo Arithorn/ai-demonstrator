@@ -2,6 +2,7 @@ import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { pictures } from "./models/Pictures.mjs";
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
+import { OpenAIClient, AzureKeyCredential } from "@azure/openai";
 const openai = new OpenAI();
 const anthropic = new Anthropic(process.env.ANTHROPIC_API_KEY);
 const checkOpenai = async () => {
@@ -15,6 +16,34 @@ const checkOpenai = async () => {
       status: true,
       reason: res.choices[0].finish_reason,
       result: res.choices[0].message,
+    };
+  } catch (error) {
+    console.error("Error checking OpenAI API:", error);
+    return { status: false, error: "Internal Server Error" };
+  }
+};
+
+const checkAzureOpenai = async () => {
+  try {
+    const client = new OpenAIClient(
+      process.env.AZURE_OPENAI_ENDPOINT,
+      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
+    );
+    const res = await client.streamChatCompletions(
+      "ts-demo-gpt-35",
+      [{ role: "system", content: "say test123" }],
+      { maxTokens: 5 }
+    );
+    let content = "";
+    for await (const event of res) {
+      for (const choice of event.choices) {
+        content += choice.delta?.content;
+      }
+    }
+
+    return {
+      status: true,
+      result: content,
     };
   } catch (error) {
     console.error("Error checking OpenAI API:", error);
@@ -70,11 +99,13 @@ const checkDatabase = async () => {
 
 const healthCheck = async (req, res) => {
   const openaiStatus = await checkOpenai();
+  const azureOpenaiStatus = await checkAzureOpenai();
   const anthropicStatus = await checkAnthropic();
   const s3Status = await checkS3();
   const databaseStatus = await checkDatabase();
   const status = {
     openai: openaiStatus.status,
+    azure: azureOpenaiStatus.status,
     anthropic: anthropicStatus.status,
     s3: s3Status.status,
     database: databaseStatus.status,
